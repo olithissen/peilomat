@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Full Screen Leaflet Map</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css" />
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html,
+        body,
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js">
+    </script>
+
+    <script>
+        var map = L.map('map').setView([51, 6], 10);
+        mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+        L.tileLayer(
+            'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; ' + mapLink + ' Contributors',
+                maxZoom: 18,
+            }).addTo(map);
+
+        var pointA = new L.LatLng(51.006550, 5.995505);
+        var pointB = new L.LatLng(51.007977, 5.985396);
+        var pointList = [pointA, pointB];
+
+        var firstpolyline = new L.Polyline(pointList, {
+            color: 'red',
+            weight: 3,
+            opacity: 0.5,
+            smoothFactor: 1
+        });
+        firstpolyline.addTo(map);
+
+        var point1 = {
+          "type": "Feature",
+          "properties": {
+            "marker-color": '#f00'
+          },
+          "geometry": {
+            "type": "Point",
+            "coordinates": [pointA.lat, pointA.lng]
+          }
+        };
+        var point2 = {
+          "type": "Feature",
+          "properties": {
+            "marker-color": '#0f0'
+          },
+          "geometry": {
+            "type": "Point",
+            "coordinates": [pointB.lat, pointB.lng]
+          }
+        };
+
+        var points = {
+          "type": "FeatureCollection",
+          "features": [point1, point2]
+        };
+
+        //=points
+        var bearing = turf.bearing(point1, point2);
+        console.log(bearing);
+
+        var distance = 35;
+        var bearing = bearing;
+        var units = 'kilometers';
+
+        var destination = turf.destination(point1, distance, bearing, units);
+        console.log(destination);
+
+        var pointC = new L.LatLng(destination.geometry.coordinates[0], destination.geometry.coordinates[1]);
+        var pointList2 = [pointA, pointC];
+
+        var secondpolyline = new L.Polyline(pointList2, {
+            color: 'blue',
+            weight: 3,
+            opacity: 0.5,
+            smoothFactor: 1
+        });
+        secondpolyline.addTo(map);
+
+    </script>
+</body>
+
+</html>
