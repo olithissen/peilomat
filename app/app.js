@@ -1,3 +1,71 @@
+class LineSegment {
+    constructor() {
+        this._targetDistance = 50000;
+    }
+    
+    get start() {
+        return this._start;
+    }
+
+    set start(newStart) {
+        this._start = newStart;
+        this.updateTarget();
+    }
+
+    get lookAt() {
+        return this._lookAt;
+    }
+
+    set lookAt(newLookAt) {
+        this._lookAt = newLookAt;
+        this.updateTarget();
+    }
+
+    get target() {
+        return this._target;
+    }
+
+    get targetDistance() {
+        return this._targetDistance;
+    }
+
+    set targetDistance(distance) {
+        this._targetDistance = distance;
+        this.updateTarget();
+    }
+
+    leafletToTurf(marker) {
+        return [marker.getLatLng().lng, marker.getLatLng().lat];
+    }
+
+    getBearing() {
+        return turf.bearing(this.leafletToTurf(this._start), this.leafletToTurf(this._lookAt));
+    }
+
+    getHeading() {
+        return (360 + this.getBearing()) % 360;
+    }
+
+    getLookAtVector() {
+        return [this._start.getLatLng(), this._lookAt.getLatLng()];
+    }
+
+    getTargetVector() {
+        return [this._lookAt.getLatLng(), this._target.getLatLng()];
+    }
+
+    updateTarget() {
+        var destination = turf.destination(this.leafletToTurf(this._start), this._targetDistance, this.getBearing(), "meters");
+        this._target.setLatLng([destination.geometry.coordinates[1], destination.geometry.coordinates[0]]);
+    }
+}
+
+class Map {
+
+}
+
+let x = new LineSegment();
+
 var measure = {
     markers: {
         start: null,
@@ -34,11 +102,11 @@ var measure = {
 function update(sender) {
     return function (e) {
         measure.updateTarget();
-        firstpolyline.setLatLngs(measure.getLookAtVector());
-        secondpolyline.setLatLngs(measure.getTargetVector());
+        lookAtLine.setLatLngs(measure.getLookAtVector());
+        targetLine.setLatLngs(measure.getTargetVector());
         measure.markers.start.setTooltipContent(Math.round(measure.getHeading()).toString() + "°");
-        sector.setAngles(0, measure.getHeading());
-        sector.setLatLng(measure.markers.start.getLatLng());
+        bearingSector.setAngles(0, measure.getHeading());
+        bearingSector.setLatLng(measure.markers.start.getLatLng());
 
     }
 }
@@ -68,23 +136,23 @@ measure.markers.target = L.marker([52, 6], {
 }).addTo(map);
 //measure.updateTarget();
 
-var firstpolyline = L.polyline(measure.getLookAtVector(), {
+var lookAtLine = L.polyline(measure.getLookAtVector(), {
     color: 'red',
     weight: 3,
     opacity: 0.5,
     smoothFactor: 1
 });
-firstpolyline.addTo(map);
+lookAtLine.addTo(map);
 
-var secondpolyline = L.polyline(measure.getTargetVector(), {
+var targetLine = L.polyline(measure.getTargetVector(), {
     color: 'blue',
     weight: 3,
     opacity: 0.5,
     smoothFactor: 1
 });
-secondpolyline.addTo(map);
+targetLine.addTo(map);
 
-var sector = L.circle(measure.markers.start.getLatLng(), {
+var bearingSector = L.circle(measure.markers.start.getLatLng(), {
 	radius: 5000
 });
-sector.addTo(map);
+bearingSector.addTo(map);
