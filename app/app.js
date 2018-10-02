@@ -7,6 +7,11 @@ class LineSegment {
         return this._start;
     }
 
+    get startAsTurf() {
+        let marker = this.leafletToTurf(this._start);
+        return [marker.lng, marker.lat];
+    }
+
     set start(newStart) {
         this._start = newStart;
         this.updateTarget();
@@ -14,6 +19,11 @@ class LineSegment {
 
     get lookAt() {
         return this._lookAt;
+    }
+
+    get lookAtAsTurf() {
+        let marker = leafletToTurf(this._lookAt);
+        return [marker.lng, marker.lat];
     }
 
     set lookAt(newLookAt) {
@@ -34,12 +44,12 @@ class LineSegment {
         this.updateTarget();
     }
 
-    leafletToTurf(marker) {
-        return [marker.getLatLng().lng, marker.getLatLng().lat];
+    get lookAtDistance() {
+        return turf.distance(this.startAsTurf, this.lookAtAsTurf);
     }
 
     getBearing() {
-        return turf.bearing(this.leafletToTurf(this._start), this.leafletToTurf(this._lookAt));
+        return turf.bearing(this.startAsTurf, this.lookAtAsTurf);
     }
 
     getHeading() {
@@ -55,9 +65,14 @@ class LineSegment {
     }
 
     updateTarget() {
-        var destination = turf.destination(this.leafletToTurf(this._start), this._targetDistance, this.getBearing(), "meters");
+        var destination = turf.destination(this.startAsTurf, this._targetDistance, this.getBearing(), "meters");
         this._target.setLatLng([destination.geometry.coordinates[1], destination.geometry.coordinates[0]]);
     }
+
+    leafletToTurf(marker) {
+        return [marker.getLatLng().lng, marker.getLatLng().lat];
+    }
+
 }
 
 class Map {
@@ -135,6 +150,10 @@ measure.markers.target = L.marker([52, 6], {
     "title": "Target"
 }).addTo(map);
 //measure.updateTarget();
+
+// x.start = measure.markers.start;
+// x.lookAt = measure.markers.lookAt;
+// x.target = measure.markers.target;
 
 var lookAtLine = L.polyline(measure.getLookAtVector(), {
     color: 'red',
