@@ -1,8 +1,9 @@
 class LineSegment {
-    constructor() {
+    constructor(map, targetDistance = 50000) {
+        this._map = map;
         this._targetDistance = 50000;
     }
-    
+
     get start() {
         return this._start;
     }
@@ -14,7 +15,6 @@ class LineSegment {
 
     set start(newStart) {
         this._start = newStart;
-        this.updateTarget();
     }
 
     get lookAt() {
@@ -28,7 +28,6 @@ class LineSegment {
 
     set lookAt(newLookAt) {
         this._lookAt = newLookAt;
-        this.updateTarget();
     }
 
     get target() {
@@ -41,7 +40,6 @@ class LineSegment {
 
     set targetDistance(distance) {
         this._targetDistance = distance;
-        this.updateTarget();
     }
 
     get lookAtDistance() {
@@ -79,8 +77,6 @@ class Map {
 
 }
 
-let x = new LineSegment();
-
 var measure = {
     markers: {
         start: null,
@@ -88,12 +84,16 @@ var measure = {
         target: null
     },
 
-    getHeading: function() {
+    getHeading: function () {
         return (360 + this.getBearing()) % 360;
     },
 
-    getBearing: function() {
+    getBearing: function () {
         return turf.bearing(this.leafletToTurf(this.markers.start.getLatLng()), this.leafletToTurf(this.markers.lookAt.getLatLng()));
+    },
+
+    getlookAtDistance() {
+        return turf.distance(this.leafletToTurf(this.markers.start.getLatLng()), this.leafletToTurf(this.markers.lookAt.getLatLng()), "meters");
     },
 
     updateTarget: function () {
@@ -120,8 +120,10 @@ function update(sender) {
         lookAtLine.setLatLngs(measure.getLookAtVector());
         targetLine.setLatLngs(measure.getTargetVector());
         measure.markers.start.setTooltipContent(Math.round(measure.getHeading()).toString() + "°");
-        bearingSector.setAngles(0, measure.getHeading());
+        measure.markers.lookAt.setTooltipContent(Math.round(measure.getlookAtDistance()).toString() + " m");
+        //bearingSector.setAngles(0, measure.getHeading());
         bearingSector.setLatLng(measure.markers.start.getLatLng());
+        myCustomControl.setContent(Math.round(measure.getlookAtDistance()).toString() + " m");
 
     }
 }
@@ -134,26 +136,29 @@ L.tileLayer(
         maxZoom: 18
     }).addTo(map);
 
+let x = new LineSegment(map);
+
 measure.markers.start = L.marker([51.0053536788148, 5.9861111640930185], {
     "draggable": true,
     "title": "Start"
 }).on("drag", update("start")).addTo(map);
-measure.markers.start.bindTooltip("My Label", {permanent: true, className: "my-label", offset: [0, 0] });
-
+measure.markers.start.bindTooltip("My Label", { permanent: true, className: "my-label", offset: [0, 0] });
+x.start = measure.markers.start;
 
 measure.markers.lookAt = L.marker([51.0032506646835, 5.98658323287964], {
     "draggable": true,
     "title": "LookAt"
 }).on("drag", update("lookAt")).addTo(map);
+measure.markers.lookAt.bindTooltip("Distance", { permanent: true, className: "my-label", offset: [0, 0] });
 
 measure.markers.target = L.marker([52, 6], {
     "title": "Target"
 }).addTo(map);
 //measure.updateTarget();
 
-// x.start = measure.markers.start;
-// x.lookAt = measure.markers.lookAt;
-// x.target = measure.markers.target;
+x.start = measure.markers.start;
+x.lookAt = measure.markers.lookAt;
+x.target = measure.markers.target;
 
 var lookAtLine = L.polyline(measure.getLookAtVector(), {
     color: 'red',
@@ -171,7 +176,26 @@ var targetLine = L.polyline(measure.getTargetVector(), {
 });
 targetLine.addTo(map);
 
-var bearingSector = L.circle(measure.markers.start.getLatLng(), {
-	radius: 5000
+var bearingSector = L.circleMarker(measure.markers.start.getLatLng(), {
+    radius: 100
 });
 bearingSector.addTo(map);
+
+var MyCustomControl = L.Control.extend({
+    options: {
+        // Default control position
+        position: 'bottomleft'
+    },
+    onAdd: function (map) {
+        // Create a container with classname and return it
+        return L.DomUtil.create('div', 'my-custom-control');
+    },
+    setContent: function (content) {
+        // Set the innerHTML of the container
+        this.getContainer().innerHTML = content;
+    }
+});
+
+// Assign to a variable so you can use it later and add it to your map
+var myCustomControl = new MyCustomControl().addTo(map);
+myCustomControl.setContent("Foo");
