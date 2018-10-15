@@ -1,22 +1,19 @@
-var ftp = require("vinyl-ftp");
+var sftp = require("gulp-sftp");
 var gulp = require("gulp");
 var gutil = require("gulp-util");
 var minimist = require("minimist");
 var args = minimist(process.argv.slice(3));
 
 gulp.task("deploy", function() {
-  var remotePath = "/";
-  var conn = ftp.create({
-    host: args.host,
-    user: args.user,
-    password: args.password,
-    log: gutil.log,
-    secure: true,
-    secureOptions: { rejectUnauthorized: false }
-  });
-
   gulp
     .src(["index.html", "./**/*.css", "./**/*.js"])
-    .pipe(conn.newer(remotePath))
+    .pipe(
+      sftp({
+        host: args.host,
+        user: args.user,
+        pass: args.password,
+        port: 33
+      })
+    )
     .pipe(conn.dest(remotePath));
 });
