@@ -7,12 +7,10 @@ before_script:
   - npm install gulp-util
 jobs:
   include:
-    - stage: install
-      script: npm install
     - stage: deploy
+      script: npm install gulp-cli -g
+      script: npm install
       script: gulp deploy --host $FTP_SERVER --user $FTP_USER --password $FTP_PASSWORD
 stages:
-  - name: install
-    if: branch = master
   - name: deploy
     if: branch = master
