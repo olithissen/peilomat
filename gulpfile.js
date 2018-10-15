@@ -14,6 +14,5 @@ gulp.task("deploy", function() {
         pass: args.password,
         port: 33
       })
-    )
-    .pipe(conn.dest(remotePath));
+    );
 });
