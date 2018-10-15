@@ -4,7 +4,8 @@ env:
   - secure: RGNnAeacISgnXcP8xNznlvqw9IxmejrAF4GS40bCro5Z/4kUyMBJE5Lt6M1p7kj3tC8CFHyA8BA9PUNOHsGTPrr8CWjJrmfsmgazWGf6kE72889haLN3keKIA8S+WxBBJMdzyDUwo9LHgGIp/plgqCaiqsuhxTxdcAKbmxkmZBzaMXp6hOUq22YqcWpZ1FmM0G05oHc/p4q8eUVY95uD45axgT/T0P0m6eYNsFHI8nngo/XukiONKDm1wEeUYvl01piad9gi+YkitfuTl3KXFWx/Jxcri9DeQ15xj9Xjbd5HUGHguEBCbZ3hTarImr6wN5ZgPj4cm3bv5nYoJyN3VrTpJIQHDv9PYmshZyh8OMQD/5xPo7sR4u4t7Qs1wgLG5YxOd9DOLr3/OquG0hWPeOOh1KDq/OL7XcbLw1cvhEERAn+d/mXuIv8yniT17m20mS5R2xUQYzkR+yFhwfVnsz9FnXEUNluM/IDHohv6ydLK1xauYotzRHkmc07mSlO2P+66/+uKW4i2U/VxrHlQs1QLGnRTEX93jhdR8KIQI2nl/3Qv+u4sL9yqt4R/ijRaBVmCYqUgy8QJhOWsgMKedqDmtXY7WbT0C0+TRAnafw00DFjcXyRpQIvExC15owZxj4DfS0YZHK5vilTrftowr4MLY7Zhh9oIS/llcH553fo=
   - secure: kxp0cOiRKhpHkdw5g+bb1i9oZSRzTUGMWlAdmHTmjfjnt3oAf+fDCkOlmciw4FL4GDbP0SKD9lobTUfFmh5R3HMzoqgUy0Wa6hT26NrD7K8KNhdr6o8FrN18gXQ/JbTgioAvKjtRYV64ZzDxyPhHOc8q95AKUE+AFp7HRBw8AXHWx4Tm7JnNT2LPoflQ4xIpvkhC00HJw7gap4dDWrSikcQv6Cw//yfHmghT1z+44B3nqQJ6o2bHSYhSMDS0gnQ1U6eXdM1b8U3LCY1Eu6Vy+w6C6cAWtrjIGIhemsAO60yn7ZuDDNhGpCYsJhtmb97TfKSKFb18aMO6J1nM6VrU29crIhkOhjgtsaL/rio3BO2gmKBHGTxTOO7Sx0rvbdj57UP5bSQ2efahyzChbF7lbzMJPhKeKOTaVCyUbsaj2upHwaGBUtxMGgVbfe4TF5iYn5Ra2QHuK0gJ0cQETmQ1U4W/t2AnZRJeIxaxT7qlFe603MZ1l1kJXAxMno4wnMFK/y11UKtFxmUEfA3sctokciNCfNbW341IFTSknQ8D0P+G2JDns3tB/glSc3csGFyPN7HXUNAKMXmR4gI2PaPgqrOg45Op6v9vGSJpgR4KnKo5tBgdqk7E61fRcHfGlFV/q13mx07luA2klR0Ur06fodbdxkVigIiOqDNZZAmiujU=
 before_script:
-  - npm install gulp gulp-cli
+  - npm install -g gulp gulp-cli
+  - npm install gulp
 jobs:
   include:
     - stage: install
@@ -12,5 +13,7 @@ jobs:
     - stage: deploy
       script: gulp deploy --host $FTP_SERVER --user $FTP_USER --password $FTP_PASSWORD
 stages:
+  - name: install
+    if: branch = master
   - name: deploy
     if: branch = master
