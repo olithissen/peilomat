@@ -121,14 +121,22 @@ function update(sender) {
         targetLine.setLatLngs(measure.getTargetVector());
         measure.markers.start.setTooltipContent(Math.round(measure.getHeading()).toString() + "°");
         measure.markers.lookAt.setTooltipContent(Math.round(measure.getlookAtDistance()).toString() + " m");
-        //bearingSector.setAngles(0, measure.getHeading());
-        bearingSector.setLatLng(measure.markers.start.getLatLng());
         myCustomControl.setContent(Math.round(measure.getlookAtDistance()).toString() + " m");
 
     }
 }
 
+function onLocationFound(e) {
+    console.log(e.latlng);
+    measure.markers.start.setLatLng(e.latlng);
+    measure.markers.lookAt.setLatLng([e.latlng.lat, e.latlng.lng + 0.01]);
+    update(this)();
+}
+
 var map = L.map('map').setView([51, 6], 10);
+
+L.control.locate({'flyTo': true}).addTo(map);
+
 mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
 L.tileLayer(
     'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -138,14 +146,14 @@ L.tileLayer(
 
 let x = new LineSegment(map);
 
-measure.markers.start = L.marker([51.0053536788148, 5.9861111640930185], {
+measure.markers.start = L.marker([0, 0], {
     "draggable": true,
     "title": "Start"
 }).on("drag", update("start")).addTo(map);
 measure.markers.start.bindTooltip("My Label", { permanent: true, className: "my-label", offset: [0, 0] });
 x.start = measure.markers.start;
 
-measure.markers.lookAt = L.marker([51.0032506646835, 5.98658323287964], {
+measure.markers.lookAt = L.marker([0, 0], {
     "draggable": true,
     "title": "LookAt"
 }).on("drag", update("lookAt")).addTo(map);
@@ -176,11 +184,6 @@ var targetLine = L.polyline(measure.getTargetVector(), {
 });
 targetLine.addTo(map);
 
-var bearingSector = L.circleMarker(measure.markers.start.getLatLng(), {
-    radius: 100
-});
-bearingSector.addTo(map);
-
 var MyCustomControl = L.Control.extend({
     options: {
         // Default control position
@@ -199,3 +202,4 @@ var MyCustomControl = L.Control.extend({
 // Assign to a variable so you can use it later and add it to your map
 var myCustomControl = new MyCustomControl().addTo(map);
 myCustomControl.setContent("Foo");
+map.on('locationfound', onLocationFound);
