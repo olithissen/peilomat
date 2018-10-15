@@ -10,8 +10,10 @@ gulp.task("deploy", function() {
     host: args.host,
     user: args.user,
     password: args.password,
-    log: gutil.log
+    log: gutil.log,
+    secure: true
   });
+
   gulp
     .src(["index.html", "./**/*.css", "./**/*.js"])
     .pipe(conn.newer(remotePath))
