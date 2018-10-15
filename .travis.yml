@@ -6,10 +6,11 @@ env:
 jobs:
   include:
     - stage: deploy
-      script: npm install gulp-cli -g
-      script: npm install gulp -D
-      script: npm install
-      script: gulp deploy --host $FTP_SERVER --user $FTP_USER --password $FTP_PASSWORD
+      script: 
+        - npm install gulp-cli -g
+        - npm install gulp -D
+        - npm install
+        - gulp deploy --host $FTP_SERVER --user $FTP_USER --password $FTP_PASSWORD
 stages:
   - name: deploy
     if: branch = master
