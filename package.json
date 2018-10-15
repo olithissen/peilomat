@@ -1,0 +1,25 @@
+{
+  "name": "peilomat",
+  "version": "1.0.0",
+  "description": "[Peilomat](http://peilomat.tonick.net/)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olithissen/peilomat.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/olithissen/peilomat/issues"
+  },
+  "homepage": "https://github.com/olithissen/peilomat#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.8",
+    "minimist": "^1.2.0",
+    "vinyl-ftp": "^0.6.1"
+  }
+}
