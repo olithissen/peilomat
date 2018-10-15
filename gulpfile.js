@@ -11,7 +11,8 @@ gulp.task("deploy", function() {
     user: args.user,
     password: args.password,
     log: gutil.log,
-    secure: true
+    secure: true,
+    secureOptions: { rejectUnauthorized: false }
   });
 
   gulp
