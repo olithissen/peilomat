@@ -6,7 +6,7 @@ var args = minimist(process.argv.slice(3));
 
 gulp.task("deploy", function() {
   gulp
-    .src(["index.html", "./**/*.css", "./**/*.js"])
+    .src(["app/index.html", "app/**/*.css", "app/**/*.js"])
     .pipe(
       sftp({
         host: args.host,
