@@ -84,6 +84,8 @@ var measure = {
         target: null
     },
 
+    markerGroup: null,
+
     getHeading: function () {
         return (360 + this.getBearing()) % 360;
     },
@@ -130,7 +132,10 @@ function onLocationFound(e) {
     console.log(e.latlng);
     measure.markers.start.setLatLng(e.latlng);
     measure.markers.lookAt.setLatLng([e.latlng.lat, e.latlng.lng + 0.01]);
+    map.fitBounds(measure.markerGroup.getBounds(), {'padding' : [50, 50]});
+    
     update(this)();
+
 }
 
 var map = L.map('map').setView([51, 6], 10);
@@ -198,6 +203,8 @@ var MyCustomControl = L.Control.extend({
         this.getContainer().innerHTML = content;
     }
 });
+
+measure.markerGroup = new L.featureGroup([measure.markers.start, measure.markers.lookAt]);
 
 // Assign to a variable so you can use it later and add it to your map
 var myCustomControl = new MyCustomControl().addTo(map);
