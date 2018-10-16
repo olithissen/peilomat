@@ -17,8 +17,9 @@
   },
   "homepage": "https://github.com/olithissen/peilomat#readme",
   "devDependencies": {
-    "gulp": "^4.0.0",
+    "gulp": "^3.9.1",
     "gulp-sftp": "^0.1.5",
+    "gulp-util": "^3.0.8",
     "minimist": "^1.2.0"
   }
 }
